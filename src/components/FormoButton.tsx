@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pressable, Text, StyleSheet } from 'react-native'
 import type { FormoFieldHandle } from '../types'
-import { useFormoContext } from './FormoContext'
+import { useFormoColorScheme, useFormoContext } from './FormoContext'
 
 export interface FormoButtonProps {
   field: FormoFieldHandle
@@ -10,6 +10,7 @@ export interface FormoButtonProps {
 
 export function FormoButton({ field, onPress }: FormoButtonProps) {
   const form = useFormoContext()
+  const dark = useFormoColorScheme() === 'dark'
   const isSubmit = field.node.attr?.type === 'submit' || field.node.driver === 'submit'
 
   return (
@@ -19,9 +20,13 @@ export function FormoButton({ field, onPress }: FormoButtonProps) {
         else if (isSubmit) void form.submit()
       }}
       disabled={field.disabled || form.submitting}
-      style={({ pressed }) => [styles.button, (pressed || form.submitting) && styles.pressed]}
+      style={({ pressed }) => [
+        styles.button,
+        dark && styles.buttonDark,
+        (pressed || form.submitting) && styles.pressed,
+      ]}
     >
-      <Text style={styles.label}>{field.node.label ?? String(field.node.alias)}</Text>
+      <Text style={[styles.label, dark && styles.labelDark]}>{field.node.label ?? String(field.node.alias)}</Text>
     </Pressable>
   )
 }
@@ -34,6 +39,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: 'center',
   },
+  buttonDark: {
+    backgroundColor: '#f9fafb',
+  },
   pressed: {
     opacity: 0.75,
   },
@@ -41,5 +49,8 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  labelDark: {
+    color: '#111827',
   },
 })

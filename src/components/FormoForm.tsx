@@ -1,13 +1,14 @@
 import React from 'react'
-import { View, type ViewProps } from 'react-native'
+import { useColorScheme, View, type ViewProps } from 'react-native'
 import type { FormoController, FormoDefinition } from '../types'
 import { useFormo, type UseFormoOptions } from '../hooks/useFormo'
-import { FormoContext } from './FormoContext'
+import { FormoColorSchemeContext, FormoContext } from './FormoContext'
 import { FormoField } from './FormoField'
 
 export interface FormoFormProps extends ViewProps {
   form: FormoDefinition | FormoController
   options?: UseFormoOptions
+  colorScheme?: 'light' | 'dark'
   children?: React.ReactNode
 }
 
@@ -36,20 +37,27 @@ function FormoFormWithDef({
   )
 }
 
-export function FormoForm({ form, options, children, ...rest }: FormoFormProps) {
+export function FormoForm({ form, options, colorScheme, children, ...rest }: FormoFormProps) {
+  const systemScheme = useColorScheme()
+  const scheme = colorScheme ?? (systemScheme === 'dark' ? 'dark' : 'light')
+
   if (!isController(form)) {
     return (
-      <FormoFormWithDef definition={form} options={options} {...rest}>
-        {children}
-      </FormoFormWithDef>
+      <FormoColorSchemeContext.Provider value={scheme}>
+        <FormoFormWithDef definition={form} options={options} {...rest}>
+          {children}
+        </FormoFormWithDef>
+      </FormoColorSchemeContext.Provider>
     )
   }
 
   return (
-    <FormoContext.Provider value={form}>
-      <View {...rest}>
-        {children ?? Object.values(form.fields).map((field) => <FormoField key={field.path} field={field} />)}
-      </View>
-    </FormoContext.Provider>
+    <FormoColorSchemeContext.Provider value={scheme}>
+      <FormoContext.Provider value={form}>
+        <View {...rest}>
+          {children ?? Object.values(form.fields).map((field) => <FormoField key={field.path} field={field} />)}
+        </View>
+      </FormoContext.Provider>
+    </FormoColorSchemeContext.Provider>
   )
 }

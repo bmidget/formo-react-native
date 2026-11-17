@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native'
 import {
   Formo,
   FormoButton,
@@ -11,7 +11,10 @@ import {
   useFormo,
 } from 'formo-react-native'
 
-function BuilderExample() {
+type Scheme = 'light' | 'dark'
+
+function BuilderExample({ scheme }: { scheme: Scheme }) {
+  const dark = scheme === 'dark'
   const definition = useMemo(
     () =>
       Formo.form('signup')
@@ -31,15 +34,16 @@ function BuilderExample() {
   })
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>Builder + Validation + Outcomes</Text>
-      <FormoForm form={form} />
-      <StateInspector form={form} />
+    <View style={[styles.card, dark && styles.cardDark]}>
+      <Text style={[styles.cardTitle, dark && styles.textDark]}>Builder + Validation + Outcomes</Text>
+      <FormoForm form={form} colorScheme={scheme} />
+      <StateInspector form={form} dark={dark} />
     </View>
   )
 }
 
-function LaravelModelExample() {
+function LaravelModelExample({ scheme }: { scheme: Scheme }) {
+  const dark = scheme === 'dark'
   const definition = useMemo(() => {
     const model = fromLaravel({
       rules: {
@@ -60,15 +64,16 @@ function LaravelModelExample() {
   })
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>From Laravel Rules (IR v1)</Text>
-      <FormoForm form={form} />
-      <StateInspector form={form} />
+    <View style={[styles.card, dark && styles.cardDark]}>
+      <Text style={[styles.cardTitle, dark && styles.textDark]}>From Laravel Rules (IR v1)</Text>
+      <FormoForm form={form} colorScheme={scheme} />
+      <StateInspector form={form} dark={dark} />
     </View>
   )
 }
 
-function CustomLayoutExample() {
+function CustomLayoutExample({ scheme }: { scheme: Scheme }) {
+  const dark = scheme === 'dark'
   const form = useFormo(
     {
       alias: 'custom',
@@ -84,12 +89,12 @@ function CustomLayoutExample() {
   )
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>Custom Field Layout</Text>
-      <FormoForm form={form}>
+    <View style={[styles.card, dark && styles.cardDark]}>
+      <Text style={[styles.cardTitle, dark && styles.textDark]}>Custom Field Layout</Text>
+      <FormoForm form={form} colorScheme={scheme}>
         <View style={styles.row}>
           <View style={styles.rowLabel}>
-            <Text style={styles.inlineLabel}>Email *</Text>
+            <Text style={[styles.inlineLabel, dark && styles.textDark]}>Email *</Text>
           </View>
           <View style={styles.rowControl}>
             <FormoField field={form.fields.email}>
@@ -105,30 +110,51 @@ function CustomLayoutExample() {
         <FormoField field={form.fields.note} />
         <FormoButton field={form.fields.send} />
       </FormoForm>
-      <StateInspector form={form} />
+      <StateInspector form={form} dark={dark} />
     </View>
   )
 }
 
-function StateInspector({ form }: { form: ReturnType<typeof useFormo> }) {
+function StateInspector({ form, dark }: { form: ReturnType<typeof useFormo>; dark: boolean }) {
   return (
-    <View style={styles.debug}>
-      <Text style={styles.debugTitle}>Live State</Text>
-      <Text style={styles.debugText}>dirty: {String(form.dirty)}</Text>
-      <Text style={styles.debugText}>values: {JSON.stringify(form.values)}</Text>
-      <Text style={styles.debugText}>errors: {JSON.stringify(form.errors)}</Text>
-      <Text style={styles.debugText}>outcome: {JSON.stringify(form.outcome)}</Text>
+    <View style={[styles.debug, dark && styles.debugDark]}>
+      <Text style={[styles.debugTitle, dark && styles.textDark]}>Live State</Text>
+      <Text style={[styles.debugText, dark && styles.debugTextDark]}>dirty: {String(form.dirty)}</Text>
+      <Text style={[styles.debugText, dark && styles.debugTextDark]}>values: {JSON.stringify(form.values)}</Text>
+      <Text style={[styles.debugText, dark && styles.debugTextDark]}>errors: {JSON.stringify(form.errors)}</Text>
+      <Text style={[styles.debugText, dark && styles.debugTextDark]}>outcome: {JSON.stringify(form.outcome)}</Text>
     </View>
   )
 }
 
 export default function App() {
+  const systemScheme = useColorScheme()
+  const [override, setOverride] = useState<Scheme | null>(null)
+  const scheme: Scheme = override ?? (systemScheme === 'dark' ? 'dark' : 'light')
+  const dark = scheme === 'dark'
   const [tab, setTab] = useState<'builder' | 'model' | 'custom'>('builder')
 
   return (
-    <ScrollView contentContainerStyle={styles.page}>
-      <Text style={styles.heading}>formo-react-native Playground</Text>
-      <Text style={styles.subheading}>Rendered via react-native-web in Vite (same primitives as React Native)</Text>
+    <ScrollView
+      style={[styles.viewport, dark && styles.viewportDark]}
+      contentContainerStyle={styles.page}
+    >
+      <View style={styles.header}>
+        <View style={styles.headerText}>
+          <Text style={[styles.heading, dark && styles.textDark]}>formo-react-native Playground</Text>
+          <Text style={[styles.subheading, dark && styles.mutedDark]}>
+            Rendered via react-native-web in Vite (same primitives as React Native)
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => setOverride(dark ? 'light' : 'dark')}
+          style={[styles.themeBtn, dark && styles.themeBtnDark]}
+        >
+          <Text style={[styles.themeBtnText, dark && styles.textDark]}>
+            {dark ? 'Light mode' : 'Dark mode'}
+          </Text>
+        </Pressable>
+      </View>
 
       <View style={styles.tabs}>
         {(
@@ -137,26 +163,62 @@ export default function App() {
             ['model', 'From Model'],
             ['custom', 'Custom Layout'],
           ] as const
-        ).map(([id, label]) => (
-          <Pressable key={id} onPress={() => setTab(id)} style={[styles.tab, tab === id && styles.tabActive]}>
-            <Text style={[styles.tabText, tab === id && styles.tabTextActive]}>{label}</Text>
-          </Pressable>
-        ))}
+        ).map(([id, label]) => {
+          const active = tab === id
+          return (
+            <Pressable
+              key={id}
+              onPress={() => setTab(id)}
+              style={[
+                styles.tab,
+                dark && styles.tabDark,
+                active && (dark ? styles.tabActiveDark : styles.tabActive),
+              ]}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  dark && styles.tabTextDark,
+                  active && (dark ? styles.tabTextActiveDark : styles.tabTextActive),
+                ]}
+              >
+                {label}
+              </Text>
+            </Pressable>
+          )
+        })}
       </View>
 
-      {tab === 'builder' ? <BuilderExample /> : null}
-      {tab === 'model' ? <LaravelModelExample /> : null}
-      {tab === 'custom' ? <CustomLayoutExample /> : null}
+      {tab === 'builder' ? <BuilderExample scheme={scheme} /> : null}
+      {tab === 'model' ? <LaravelModelExample scheme={scheme} /> : null}
+      {tab === 'custom' ? <CustomLayoutExample scheme={scheme} /> : null}
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
+  viewport: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  viewportDark: {
+    backgroundColor: '#0b0f19',
+  },
   page: {
     maxWidth: 680,
     width: '100%',
     alignSelf: 'center',
     padding: 24,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 16,
+  },
+  headerText: {
+    flex: 1,
   },
   heading: {
     fontSize: 24,
@@ -167,7 +229,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#6b7280',
     marginTop: 4,
-    marginBottom: 16,
+  },
+  themeBtn: {
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    backgroundColor: '#ffffff',
+  },
+  themeBtnDark: {
+    borderColor: '#374151',
+    backgroundColor: '#1f2937',
+  },
+  themeBtnText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#111827',
   },
   tabs: {
     flexDirection: 'row',
@@ -180,16 +258,28 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#e5e7eb',
   },
+  tabDark: {
+    backgroundColor: '#1f2937',
+  },
   tabActive: {
     backgroundColor: '#111827',
+  },
+  tabActiveDark: {
+    backgroundColor: '#f9fafb',
   },
   tabText: {
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
   },
+  tabTextDark: {
+    color: '#d1d5db',
+  },
   tabTextActive: {
     color: '#ffffff',
+  },
+  tabTextActiveDark: {
+    color: '#111827',
   },
   card: {
     backgroundColor: '#ffffff',
@@ -197,6 +287,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: '#e5e7eb',
+  },
+  cardDark: {
+    backgroundColor: '#111827',
+    borderColor: '#1f2937',
   },
   cardTitle: {
     fontSize: 17,
@@ -229,6 +323,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     gap: 4,
   },
+  debugDark: {
+    backgroundColor: '#1f2937',
+  },
   debugTitle: {
     fontSize: 12,
     fontWeight: '700',
@@ -239,5 +336,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'monospace',
     color: '#1f2937',
+  },
+  debugTextDark: {
+    color: '#d1d5db',
+  },
+  textDark: {
+    color: '#f9fafb',
+  },
+  mutedDark: {
+    color: '#9ca3af',
   },
 })

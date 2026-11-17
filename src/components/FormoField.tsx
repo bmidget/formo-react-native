@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import type { FormoFieldHandle } from '../types'
 import { FormoButton } from './FormoButton'
+import { useFormoColorScheme } from './FormoContext'
 import { FormoErrors } from './FormoErrors'
 import { FormoInput } from './FormoInput'
 import { FormoSwitch } from './FormoSwitch'
@@ -28,17 +29,18 @@ export function FormoField({ field, children }: FormoFieldProps) {
 
   const { node } = field
   const isButton = node.driver === 'button' || node.driver === 'submit'
+  const dark = useFormoColorScheme() === 'dark'
 
   return (
     <View style={styles.field}>
       {!isButton && node.label ? (
-        <Text style={styles.label}>
+        <Text style={[styles.label, dark && styles.labelDark]}>
           {node.label}
           {field.required ? ' *' : ''}
         </Text>
       ) : null}
       <DefaultControl field={field} />
-      {node.message ? <Text style={styles.help}>{node.message}</Text> : null}
+      {node.message ? <Text style={[styles.help, dark && styles.helpDark]}>{node.message}</Text> : null}
       <FormoErrors field={field} />
     </View>
   )
@@ -54,9 +56,15 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     color: '#111827',
   },
+  labelDark: {
+    color: '#e5e7eb',
+  },
   help: {
     fontSize: 12,
     color: '#6b7280',
     marginTop: 4,
+  },
+  helpDark: {
+    color: '#9ca3af',
   },
 })

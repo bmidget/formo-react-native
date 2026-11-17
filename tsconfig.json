@@ -9,7 +9,11 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "formo-react-native": ["./src/index.ts"],
+      "formo-react-native/schema": ["./src/schema/index.ts"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "playground/**/*.ts", "playground/**/*.tsx", "tests/**/*.ts"]
 }
