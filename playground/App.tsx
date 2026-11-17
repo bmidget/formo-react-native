@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native'
 import {
   Formo,
@@ -133,6 +133,13 @@ export default function App() {
   const scheme: Scheme = override ?? (systemScheme === 'dark' ? 'dark' : 'light')
   const dark = scheme === 'dark'
   const [tab, setTab] = useState<'builder' | 'model' | 'custom'>('builder')
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.body.style.backgroundColor = dark ? '#0b0f19' : '#f9fafb'
+      document.documentElement.style.colorScheme = scheme
+    }
+  }, [dark, scheme])
 
   return (
     <ScrollView
