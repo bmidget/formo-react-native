@@ -11,5 +11,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "playground/**/*.ts", "playground/**/*.tsx", "tests/**/*.ts"]
 }

@@ -17,6 +17,9 @@
     }
   },
   "scripts": {
+    "dev": "vite",
+    "build:playground": "vite build",
+    "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -29,9 +32,13 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
     "react": "^19.0.0",
     "react-native": ">=0.72.0",
+    "react-native-web": "^0.21.4",
     "typescript": "~5.9.3",
+    "vite": "^8.3.8",
     "vitest": "^3.0.0"
   }
 }
