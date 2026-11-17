@@ -1,6 +1,14 @@
 # formo-react-native
 
-A rough starting-point port of [formo-vue](../formo-vue) ("forms as objects") for **React Native**, including the framework-free `formo-react-native/schema` layer (IR v1, `fromLaravel`, `fromJsonSchema`, `fromOpenApi`, `fromZod`).
+A rough starting-point port of [formo-vue](https://github.com/bmidget/formo-vue) ("forms as objects") for **React Native**, including the framework-free `formo-react-native/schema` layer (IR v1, `fromLaravel`, `fromJsonSchema`, `fromOpenApi`, `fromZod`).
+
+**[Documentation & Live Demos →](https://bmidget.github.io/formo-react-native/)**
+
+## Installation
+
+```sh
+bun add formo-react-native
+```
 
 ## Current State (Raw Starting Point)
 

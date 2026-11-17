@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Formo — forms as objects — rough React Native port of formo-vue.",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bmidget/formo-react-native.git"
+  },
+  "homepage": "https://bmidget.github.io/formo-react-native/",
+  "bugs": {
+    "url": "https://github.com/bmidget/formo-react-native/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,6 +26,9 @@
   },
   "scripts": {
     "dev": "vite",
+    "docs:dev": "vitepress dev docs",
+    "build:docs": "vitepress build docs",
+    "preview:docs": "vitepress preview docs",
     "build:playground": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
@@ -39,6 +50,7 @@
     "react-native-web": "^0.21.4",
     "typescript": "~5.9.3",
     "vite": "^8.3.8",
+    "vitepress": "^1.6.4",
     "vitest": "^3.0.0"
   }
 }
